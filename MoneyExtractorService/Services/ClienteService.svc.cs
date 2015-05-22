@@ -33,6 +33,7 @@ namespace MoneyExtractorService.Services
                 {
                     paymentDataResponse.Message = "Pagamento Efetuado, não há troco.";                    
                 }
+
                 //else
                 //{
                 //    Dictionary<long, long> billCollection = new Bill().CalculateChange(change);
