@@ -65,6 +65,7 @@
   <ItemGroup>
     <Compile Include="Entities\AbstractRequest.cs" />
     <Compile Include="Entities\AbstractResponse.cs" />
+    <Compile Include="Entities\Bill.cs" />
     <Compile Include="Entities\ChangeData.cs" />
     <Compile Include="Entities\ChangeType.cs" />
     <Compile Include="Entities\Coin.cs" />

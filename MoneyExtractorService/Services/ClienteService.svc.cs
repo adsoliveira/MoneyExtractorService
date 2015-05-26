@@ -34,27 +34,28 @@ namespace MoneyExtractorService.Services
                     paymentDataResponse.Message = "Pagamento Efetuado, não há troco.";                    
                 }
 
-                //else
-                //{
-                //    Dictionary<long, long> billCollection = new Bill().CalculateChange(change);
+                else
+                {
+                    Dictionary<long, long> billCollection = new Bill().CalculateChange(change);
 
-                //    //TODO: Ler nas configuraçôes a ordem dos tipos de retorno (Cédula > Moeda > ...)
-                //    long remainingAmount = change - billCollection.Sum(amount => amount.Key * amount.Value);
+                    //TODO: Ler nas configuraçôes a ordem dos tipos de retorno (Cédula > Moeda > ...)
+                    long remainingAmount = change - billCollection.Sum(amount => amount.Key * amount.Value);
 
-                //    paymentDataResponse.ChangeData = new ChangeData();
+                    paymentDataResponse.changeData = new ChangeData();
 
-                //    paymentDataResponse.ChangeData.ChangeTotalResult.Add(ChangeType.Bill, billCollection);
+                    paymentDataResponse.changeData.ChangeTotalResult.Add(ChangeType.Bill, billCollection);
 
-                //    //TODO: Montar loop para os tipos de retorno
-                //    if (remainingAmount > 0) {
+                    //TODO: Montar loop para os tipos de retorno
+                    if (remainingAmount > 0)
+                    {
 
-                //        Dictionary<long, long> coinCollection = new Coin().CalculateChange(remainingAmount);
+                        Dictionary<long, long> coinCollection = new Coin().CalculateChange(remainingAmount);
 
-                //        paymentDataResponse.ChangeData.ChangeTotalResult.Add(ChangeType.Coin, coinCollection);
-                //    }
+                        paymentDataResponse.changeData.ChangeTotalResult.Add(ChangeType.Coin, coinCollection);
+                    }
 
-                //    //TODO: Montar o ChangeData com os valores retornados
-                //}
+                    //TODO: Montar o ChangeData com os valores retornados
+                }
 
             }
             catch (Exception)
