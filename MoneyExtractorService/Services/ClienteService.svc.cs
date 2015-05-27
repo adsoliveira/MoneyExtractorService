@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.ServiceModel;
-using System.Text;
 using MoneyExtractorService.Entities;
+using MoneyExtractorService.Processors;
 
 namespace MoneyExtractorService.Services
 {
@@ -13,6 +11,7 @@ namespace MoneyExtractorService.Services
     {
         public PaymentDataResponse SellProduct(PaymentDataRequest paymentData)
         {
+
             PaymentDataResponse paymentDataResponse = new PaymentDataResponse();
 
             try
@@ -29,34 +28,32 @@ namespace MoneyExtractorService.Services
 
                 paymentDataResponse.TotalAmountInCents = change;
 
-                if (change == 0)
-                {
-                    paymentDataResponse.Message = "Pagamento Efetuado, não há troco.";                    
-                }
+                //Chamar o Factory enquanto houver troco
+                AbstractProcessor processor = null;
+                                
+                // Dictionary<ChangeType, Dictionary<long, long>> changeTotalResult = new Dictionary<ChangeType, Dictionary<long, long>>();
 
-                else
-                {
-                    Dictionary<long, long> billCollection = new Bill().CalculateChange(change);
-
-                    //TODO: Ler nas configuraçôes a ordem dos tipos de retorno (Cédula > Moeda > ...)
-                    long remainingAmount = change - billCollection.Sum(amount => amount.Key * amount.Value);
-
-                    paymentDataResponse.changeData = new ChangeData();
-
-                    paymentDataResponse.changeData.ChangeTotalResult.Add(ChangeType.Bill, billCollection);
-
-                    //TODO: Montar loop para os tipos de retorno
-                    if (remainingAmount > 0)
+                    while (change > 0)
                     {
+                        processor = ProcessorFactory.Create(change);
 
-                        Dictionary<long, long> coinCollection = new Coin().CalculateChange(remainingAmount);
+                        if (processor == null)
+                        {
+                            break;
+                        }
+                        Dictionary<long, long> calculateChangeResult = processor.CalculateChange(change);
 
-                        paymentDataResponse.changeData.ChangeTotalResult.Add(ChangeType.Coin, coinCollection);
+                        paymentDataResponse.ChangeData.ChangeTotalResult.Add(processor.GetChangeType(), calculateChangeResult);
+
+                        //TODO: Montar o ChangeData com os valores retornados
+                        long remainingAmount = calculateChangeResult.Sum(c => c.Key * c.Value);
+
+                        change = change - remainingAmount;
                     }
 
-                    //TODO: Montar o ChangeData com os valores retornados
-                }
+                    paymentDataResponse.Success = true;
 
+                
             }
             catch (Exception)
             {

@@ -7,11 +7,14 @@ namespace MoneyExtractorService.Entities
 {
     public class PaymentDataResponse : AbstractResponse
     {
-        public PaymentDataResponse() { }
+       public PaymentDataResponse()
+        {
+            this.ChangeData = new ChangeData();
+        }
 
         public long  TotalAmountInCents { get; set; }
 
-        public ChangeData changeData { get; set; }
+        public ChangeData ChangeData { get; set; }
 
         public string  Message { get; set; }
     }
