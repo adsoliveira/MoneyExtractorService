@@ -6,12 +6,12 @@ using MoneyExtractorService.Processors;
 
 namespace MoneyExtractorService.Services
 {
-   
     public class ClienteService : IClienteService
     {
         public PaymentDataResponse SellProduct(PaymentDataRequest paymentData)
         {
-
+ 
+            //Armazenar o resultado
             PaymentDataResponse paymentDataResponse = new PaymentDataResponse();
 
             try
@@ -26,12 +26,12 @@ namespace MoneyExtractorService.Services
                 //Calculando o troco
                 long change = paymentData.PaidAmountInCents - paymentData.ProductAmountInCents;
 
-                paymentDataResponse.TotalAmountInCents = change;
+                long totalAmountInCents = change;
 
                 //Chamar o Factory enquanto houver troco
                 AbstractProcessor processor = null;
                                 
-                // Dictionary<ChangeType, Dictionary<long, long>> changeTotalResult = new Dictionary<ChangeType, Dictionary<long, long>>();
+                Dictionary<ChangeType, Dictionary<long, long>> changeTotalResult = new Dictionary<ChangeType, Dictionary<long, long>>();
 
                     while (change > 0)
                     {
@@ -39,11 +39,12 @@ namespace MoneyExtractorService.Services
 
                         if (processor == null)
                         {
+                            paymentDataResponse.Message = "Não foi possível efetuar sua compra.";
                             break;
                         }
                         Dictionary<long, long> calculateChangeResult = processor.CalculateChange(change);
-
-                        paymentDataResponse.ChangeData.ChangeTotalResult.Add(processor.GetChangeType(), calculateChangeResult);
+                                                
+                        changeTotalResult.Add(processor.GetChangeType(), calculateChangeResult);
 
                         //TODO: Montar o ChangeData com os valores retornados
                         long remainingAmount = calculateChangeResult.Sum(c => c.Key * c.Value);
@@ -51,15 +52,20 @@ namespace MoneyExtractorService.Services
                         change = change - remainingAmount;
                     }
 
-                    paymentDataResponse.Success = true;
+                   if (change == 0)
+                    {
 
-                
+                        paymentDataResponse.Success = true;
+
+                        paymentDataResponse.TotalAmountInCents = totalAmountInCents;
+                        paymentDataResponse.ChangeData.ChangeTotalResult = changeTotalResult;
+                    }
             }
             catch (Exception)
-            {
-                throw;
+            {                
+                paymentDataResponse.Message = "Error ao processar sua compra.";
             }
-
+            
             return paymentDataResponse;
         }
     }

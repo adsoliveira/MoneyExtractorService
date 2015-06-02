@@ -39,6 +39,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Dlp.Framework">
+      <HintPath>..\packages\Dlp.Framework.dll.0.6.4\lib\net45\Dlp.Framework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
@@ -70,6 +73,13 @@
     <Compile Include="Entities\ErrorReport.cs" />
     <Compile Include="Entities\PaymentDataRequest.cs" />
     <Compile Include="Entities\PaymentDataResponse.cs" />
+    <Compile Include="Interceptors\LogInterceptor.cs" />
+    <Compile Include="Logs\EventViewerLog.cs" />
+    <Compile Include="Logs\FileLog.cs" />
+    <Compile Include="Logs\ILog.cs" />
+    <Compile Include="Logs\LogFactory.cs" />
+    <Compile Include="Logs\LogManager.cs" />
+    <Compile Include="Logs\LogType.cs" />
     <Compile Include="Processors\AbstractProcessor.cs" />
     <Compile Include="Processors\BillProcessor.cs" />
     <Compile Include="Processors\CoinProcessor.cs" />
@@ -79,14 +89,14 @@
       <DependentUpon>ClienteService.svc</DependentUpon>
     </Compile>
     <Compile Include="Services\IClienteService.cs" />
+    <Compile Include="Utility\ConfigurationUtility.cs" />
+    <Compile Include="Utility\IConfigurationUtility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Interceptors\" />
-    <Folder Include="Logs\" />
-    <Folder Include="Utility\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="packages.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
